@@ -10,3 +10,10 @@ import random
 
 DATA = 'Trees.csv'
 
+@st.cache
+def load_data(file):
+    data = pd.read_csv(file)
+    lowercase = lambda x: str(x).lower()
+    data.rename(lowercase, axis='columns', inplace=True)
+    return data
+
