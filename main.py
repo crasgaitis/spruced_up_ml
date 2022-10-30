@@ -9,6 +9,10 @@ import pickle
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 import gzip
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
 
 with gzip.open('ml_model.pkl', 'rb') as f:
     p = pickle.Unpickler(f)
@@ -21,6 +25,7 @@ def load_data(file):
 
 DATA = 'Trees.csv'
 data = load_data(DATA)
+data = data[['DIAM', 'SITETYPE', 'GENUS', 'PRIMARYDISTRICTCD']]
 
 st.title("Find your tree's new home")
 
@@ -34,8 +39,26 @@ GENUS = st.selectbox("Genus", ("Acer", "Prunus", "Malus", "Crataegus", "Quercus"
 
 submit = st.button("Calculate")
 
+user_input = pd.DataFrame(np.array([[DIAM, SITETYPE, GENUS]]), columns =['DIAM', 'SITETYPE', 'GENUS'])
+st.write(user_input)
+
+num = ['DIAM']
+cat = ['SITETYPE', 'GENUS']
+
+num_pipeline = Pipeline([
+  ("std_scaler", StandardScaler())
+])
+
+col_pipeline = ColumnTransformer([  
+  ("num", num_pipeline, num), 
+  ("cat", OneHotEncoder(), cat),  
+])
+
+full_pipeline = Pipeline([   
+  ("col_pipeline", col_pipeline)
+])
+
+
 if submit:
-    user_input_prepared = pd.DataFrame(np.array([[DIAM, SITETYPE, GENUS]]), columns =['DIAM', 'SITETYPE', 'GENUS'])
-    user_input_prepared = full_pipeline.transform(user_input_prepared)
-
-
+    user_input_prep = full_pipeline.transform(user_input)
+    st.write(user_input_prep)
