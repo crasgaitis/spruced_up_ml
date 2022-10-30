@@ -35,12 +35,11 @@ DIAM = st.selectbox("Diameter (inches)", ('2', '3', '4', '5', '6', '7', '8', '9'
 
 SITETYPE = st.selectbox("Site type", ("STRP", "PIT"))
 
-GENUS = st.selectbox("Genus", ("Acer", "Prunus", "Malus", "Crataegus", "Quercus", "Cornus", "Pyrus"))
+GENUS = st.selectbox("Genus", ("Acer", "Prunus", "Malus", "Quercus", "Pyrus"))
 
 submit = st.button("Calculate")
 
 user_input = pd.DataFrame(np.array([[DIAM, SITETYPE, GENUS]]), columns =['DIAM', 'SITETYPE', 'GENUS'])
-st.write(user_input)
 
 input_ = {
     "DIAM": int(DIAM),
@@ -48,13 +47,27 @@ input_ = {
     "GENUS": [GENUS]
 }
 user_input = pd.DataFrame(input_) 
-user_input
 
 cat = ['DIAM', 'SITETYPE', 'GENUS']
 
 if submit:
     user_input_prep = full_pipeline.transform(user_input)
-    st.write(user_input_prep)
     
     pred = clf.predict(user_input_prep)
-    st.write(pred)
+    
+    if pred == [6]:
+         location = "District 7"
+    elif pred == [5]:
+         location = "District 6"
+    elif pred == [4]:
+         location = "District 5"
+    elif pred == [3]:
+         location = "District 4"
+    elif pred == [2]:
+         location = "District 3"
+    elif pred == [1]:
+         location = "District 2"
+    else:
+        location = "District 1"
+        
+    st.title(location)
